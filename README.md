@@ -1,2 +1,0 @@
-# testSurvey
-Test Survey
