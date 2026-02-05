@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Consumer Research Intake</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --text:rgba(255,255,255,0.92);
+      --muted:rgba(255,255,255,0.72);
+      --accent:#ff4d8d;
+      --accent2:#7c5cff;
+      --good:#39d98a;
+      --shadow:0 18px 55px rgba(0,0,0,0.45);
+      --radius:22px;
+      --maxw:940px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; min-height:100vh; display:grid; place-items:center; padding:18px;
+      font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background:
+        radial-gradient(900px 400px at 20% 15%, rgba(124,92,255,0.30), transparent 60%),
+        radial-gradient(700px 350px at 80% 25%, rgba(255,77,141,0.20), transparent 55%),
+        radial-gradient(900px 500px at 50% 90%, rgba(57,217,138,0.12), transparent 60%),
+        var(--bg);
+    }
+    .wrap{width:100%; max-width:var(--maxw)}
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      margin-bottom:14px; padding:10px 14px; border-radius:999px;
+      background:rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.10);
+      backdrop-filter:blur(10px);
+    }
+    .badge{
+      display:inline-flex; align-items:center; gap:10px;
+      padding:8px 12px; border-radius:999px;
+      background:rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.12);
+      font-size:13px; color:var(--muted); white-space:nowrap;
+    }
+    .dot{
+      width:10px; height:10px; border-radius:50%;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      box-shadow:0 0 0 4px rgba(255,77,141,0.12);
+    }
+    .progress{
+      flex:1; height:10px; border-radius:999px; overflow:hidden;
+      background:rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.10);
+    }
+    .progress>div{
+      height:100%; width:0%;
+      border-radius:999px;
+      background:linear-gradient(90deg,var(--accent2),var(--accent));
+      transition:width 420ms ease;
+    }
+    .card{
+      border-radius:var(--radius);
+      background:linear-gradient(180deg,rgba(255,255,255,0.10),rgba(255,255,255,0.06));
+      border:1px solid rgba(255,255,255,0.12);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .header{
+      padding:22px 22px 12px 22px;
+      border-bottom:1px solid rgba(255,255,255,0.10);
+      background:
+        radial-gradient(800px 200px at 30% 0%, rgba(124,92,255,0.25), transparent 60%),
+        radial-gradient(600px 200px at 70% 0%, rgba(255,77,141,0.14), transparent 60%);
+    }
+    .title{margin:0; font-size:20px; letter-spacing:.2px}
+    .subtitle{margin:8px 0 0 0; color:var(--muted); font-size:14px; line-height:1.4}
+    .content{padding:18px 22px 22px 22px}
+
+    .step{display:none; animation:fadeIn 350ms ease}
+    .step.active{display:block}
+    @keyframes fadeIn{from{opacity:0; transform:translateY(6px)}to{opacity:1; transform:translateY(0)}}
+
+    .q{margin:0 0 10px 0; font-size:16px}
+    .help{margin:0 0 16px 0; color:var(--muted); font-size:13px; line-height:1.5}
+
+    .grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    @media (max-width:720px){.grid{grid-template-columns:1fr}}
+
+    .field{
+      background:rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.10);
+      border-radius:16px;
+      padding:12px;
+    }
+    label{display:block; font-size:12px; color:var(--muted); margin-bottom:8px}
+    input[type="text"], select, textarea{
+      width:100%;
+      color:var(--text);
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.12);
+      border-radius:12px;
+      padding:10px 12px;
+      outline:none;
+      font-size:14px;
+    }
+    textarea{min-height:90px; resize:vertical}
+
+    .choices{display:grid; gap:10px}
+    .choice{
+      display:flex; gap:10px; align-items:flex-start;
+      padding:12px; border-radius:16px;
+      background:rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.10);
+      cursor:pointer;
+      transition:transform 140ms ease, background 140ms ease, border-color 140ms ease;
+      user-select:none;
+    }
+    .choice:hover{
+      transform:translateY(-1px);
+      background:rgba(255,255,255,0.08);
+      border-color:rgba(255,255,255,0.18);
+    }
+    .choice input{margin-top:3px}
+    .choice strong{display:block; font-size:14px}
+    .choice span{display:block; font-size:12px; color:var(--muted); margin-top:2px}
+
+    .actions{
+      display:flex; gap:10px; justify-content:space-between;
+      margin-top:18px; flex-wrap:wrap;
+    }
+    button{
+      border:0; border-radius:14px; padding:11px 14px;
+      font-weight:700; cursor:pointer; color:var(--text);
+      background:rgba(255,255,255,0.10);
+      border:1px solid rgba(255,255,255,0.14);
+      transition:transform 140ms ease, background 140ms ease, border-color 140ms ease;
+    }
+    button:hover{
+      transform:translateY(-1px);
+      background:rgba(255,255,255,0.14);
+      border-color:rgba(255,255,255,0.22);
+    }
+    .primary{background:linear-gradient(135deg,var(--accent2),var(--accent)); border:0}
+    .primary:hover{filter:brightness(1.06)}
+    .ghost{background:transparent}
+    .danger{background:rgba(255,77,141,0.10); border-color:rgba(255,77,141,0.35)}
+
+    .pillrow{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+    .pill{
+      font-size:12px; padding:8px 10px; border-radius:999px;
+      background:rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.10);
+      color:var(--muted);
+    }
+
+    /* Valentine reveal */
+    .valentine{
+      display:grid; gap:14px; place-items:center; text-align:center;
+      padding:14px 0 0 0; min-height:280px;
+    }
+    .big{font-size:32px; margin:0; letter-spacing:.2px}
+    .mini{margin:0; color:var(--muted); font-size:14px; max-width:58ch; line-height:1.5}
+
+    .btnbox{
+      position:relative; width:min(560px,100%); height:190px;
+      border-radius:18px;
+      background:rgba(255,255,255,0.05);
+      border:1px dashed rgba(255,255,255,0.18);
+      overflow:hidden;
+      margin-top:8px;
+    }
+    .btnbox .yes{position:absolute; left:50%; top:55%; transform:translate(-50%,-50%)}
+    .btnbox .no{position:absolute; left:72%; top:66%}
+
+    .confetti{
+      position:absolute; inset:0; pointer-events:none;
+      opacity:0; transition:opacity 250ms ease;
+    }
+    .confetti.show{opacity:1}
+
+    .result{
+      display:none;
+      margin-top:10px; padding:14px; border-radius:18px;
+      background:rgba(57,217,138,0.08);
+      border:1px solid rgba(57,217,138,0.22);
+      text-align:left; width:min(760px,100%);
+    }
+    .result.show{display:block; animation:fadeIn 350ms ease}
+    .result h3{margin:0 0 8px 0; font-size:16px}
+    .result p{margin:6px 0; font-size:14px; line-height:1.5}
+    .result .muted{color:var(--muted); font-size:13px}
+
+    .footer{
+      padding:14px 22px;
+      border-top:1px solid rgba(255,255,255,0.10);
+      display:flex; justify-content:space-between; align-items:center;
+      gap:10px; color:var(--muted); font-size:12px; flex-wrap:wrap;
+    }
+    .tiny{opacity:.85; display:inline-flex; align-items:center; gap:6px; white-space:nowrap}
+    .heart{width:14px; height:14px; display:inline-block; transform:translateY(1px)}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="badge"><span class="dot"></span> Research Intake • Internal</div>
+      <div class="progress"><div id="bar"></div></div>
+      <div class="badge">Team: Cards & Digital</div>
+    </div>
+
+    <div class="card">
+      <div class="header">
+        <h1 class="title" id="mainTitle">Consumer Rewards & Lifestyle Survey</h1>
+        <p class="subtitle" id="mainSub">
+          Quick “Chase-style” research intake about cards, rewards, shopping and streaming habits. Takes ~60 seconds.
+        </p>
+      </div>
+
+      <div class="content">
+
+        <!-- Step 1 -->
+        <section class="step active" data-step="1">
+          <p class="q">1) Participant info</p>
+          <p class="help">Used to segment results. (Please do not sue me.)</p>
+          <div class="grid">
+            <div class="field">
+              <label>Name</label>
+              <input id="name" type="text" value="Karthi" />
+            </div>
+            <div class="field">
+              <label>Spending vibe (most accurate)</label>
+              <select id="spendVibe">
+                <option value="">Select one…</option>
+                <option>Planner</option>
+                <option>Mostly responsible</option>
+                <option>Treat-yourself energy</option>
+                <option>Minimalist</option>
+              </select>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="ghost" disabled>Back</button>
+            <button class="primary" onclick="nextStep()">Continue</button>
+          </div>
+        </section>
+
+        <!-- Step 2 -->
+        <section class="step" data-step="2">
+          <p class="q">2) Credit cards & rewards behavior</p>
+          <p class="help">Pick what describes you best.</p>
+
+          <div class="choices">
+            <label class="choice">
+              <input type="radio" name="rewards" value="Cashback > everything." />
+              <div>
+                <strong>Cashback person</strong>
+                <span>Simple: I like money back.</span>
+              </div>
+            </label>
+            <label class="choice">
+              <input type="radio" name="rewards" value="Points/miles person (I will do math)." />
+              <div>
+                <strong>Points / miles optimizer</strong>
+                <span>I will absolutely do math for travel.</span>
+              </div>
+            </label>
+            <label class="choice">
+              <input type="radio" name="rewards" value="I use one card and refuse to think about it." />
+              <div>
+                <strong>One-card loyalist</strong>
+                <span>It works, I don’t overthink it.</span>
+              </div>
+            </label>
+          </div>
+
+          <div class="field" style="margin-top:12px;">
+            <label>Most important feature</label>
+            <select id="cardFeature">
+              <option value="">Select one…</option>
+              <option>Cashback</option>
+              <option>Travel points</option>
+              <option>Purchase protection</option>
+              <option>Customer service</option>
+              <option>Fraud protection</option>
+              <option>No annual fee</option>
+            </select>
+
+            <!-- Kept ONLY the KPI pill -->
+            <div class="pillrow">
+              <span class="pill">KPI: good vibes</span>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button onclick="prevStep()">Back</button>
+            <button class="primary" onclick="nextStep()">Continue</button>
+          </div>
+        </section>
+
+        <!-- Step 3 -->
+        <section class="step" data-step="3">
+          <p class="q">3) Shopping & offers</p>
+          <p class="help">This helps “personalize offers.” (Definitely not a trap.)</p>
+
+          <div class="choices">
+            <label class="choice">
+              <input type="radio" name="shop" value="Online shopping (Amazon/Target/etc.)." />
+              <div>
+                <strong>Mostly online</strong>
+                <span>Fast delivery, minimal effort.</span>
+              </div>
+            </label>
+            <label class="choice">
+              <input type="radio" name="shop" value="In-store shopping (I like seeing things)." />
+              <div>
+                <strong>Mostly in-store</strong>
+                <span>I like seeing the item before buying.</span>
+              </div>
+            </label>
+            <label class="choice">
+              <input type="radio" name="shop" value="Both (depends on mood)." />
+              <div>
+                <strong>Both</strong>
+                <span>It depends on the vibes.</span>
+              </div>
+            </label>
+          </div>
+
+          <div class="field" style="margin-top:12px;">
+            <label>Impulse purchase risk level</label>
+            <select id="impulse">
+              <option value="">Select one…</option>
+              <option>Low (I am disciplined)</option>
+              <option>Medium (sometimes…)</option>
+              <option>High (new package? yes)</option>
+            </select>
+          </div>
+
+          <div class="actions">
+            <button onclick="prevStep()">Back</button>
+            <button class="primary" onclick="nextStep()">Continue</button>
+          </div>
+        </section>
+
+        <!-- Step 4 -->
+        <section class="step" data-step="4">
+          <p class="q">4) Streaming usage</p>
+          <p class="help">Pick what you actually use (not what you <em>pay for</em> 😅).</p>
+
+          <div class="field">
+            <label>Primary streaming service</label>
+            <select id="primaryStream">
+              <option value="">Select one…</option>
+              <option>Netflix</option>
+              <option>Hulu</option>
+              <option>Prime Video</option>
+              <option>Disney+</option>
+              <option>Max</option>
+              <option>Other / rotate</option>
+            </select>
+          </div>
+
+          <div class="choices" style="margin-top:12px;">
+            <label class="choice">
+              <input type="radio" name="pickStyle" value="I pick fast. No scrolling." />
+              <div>
+                <strong>Fast picker</strong>
+                <span>We start the movie immediately.</span>
+              </div>
+            </label>
+            <label class="choice">
+              <input type="radio" name="pickStyle" value="I scroll forever then rewatch comfort stuff." />
+              <div>
+                <strong>Comfort re-watcher</strong>
+                <span>I need a safe choice.</span>
+              </div>
+            </label>
+            <label class="choice">
+              <input type="radio" name="pickStyle" value="I say 'anything' but I have opinions." />
+              <div>
+                <strong>“Anything is fine” (opinions)</strong>
+                <span>Classic.</span>
+              </div>
+            </label>
+          </div>
+
+          <div class="field" style="margin-top:12px;">
+            <label>Any notes for the analyst?</label>
+            <textarea id="notes" placeholder="Optional… but he will read it 👀"></textarea>
+          </div>
+
+          <div class="actions">
+            <button onclick="prevStep()">Back</button>
+            <button class="primary" onclick="nextStep()">Submit</button>
+          </div>
+        </section>
+
+        <!-- Step 5: Submission received (NO Valentine here) -->
+        <section class="step" data-step="5">
+          <p class="q">Submission received ✅</p>
+          <p class="help">
+            Great. The “survey” is complete.
+          </p>
+          <div class="actions">
+            <button onclick="restart()">Start over</button>
+            <button class="primary" onclick="nextStep()">Continue</button>
+          </div>
+        </section>
+
+        <!-- Step 6: Valentine page -->
+        <section class="step" data-step="6">
+          <p class="q">Final approval step</p>
+          <p class="help">
+            (This is technically a workflow. Please comply.)
+          </p>
+
+          <div class="valentine">
+            <h2 class="big" id="valTitle">Karthi, will you be my Valentine? 💘</h2>
+            <p class="mini" id="valMini">
+              Choose wisely 😄
+            </p>
+
+            <div class="btnbox" id="btnbox">
+              <button class="primary yes" id="yesBtn">Yes 💖</button>
+              <button class="danger no" id="noBtn">No</button>
+              <canvas class="confetti" id="confetti"></canvas>
+            </div>
+
+            <!-- Date plans ONLY show after Yes -->
+            <div class="result" id="result">
+              <h3>Approved ✅</h3>
+              <p><strong id="planLine"></strong></p>
+              <p class="muted" id="detailsLine"></p>
+              <p class="muted" id="recapLine"></p>
+              <div class="actions" style="justify-content:center; margin-top:12px;">
+                <button class="primary" id="copyBtn">Copy date message</button>
+              </div>
+            </div>
+
+            <p class="mini" style="margin-top:0; opacity:0.85;">
+              (If the “No” button is acting weird… that’s intentional.)
+            </p>
+          </div>
+
+          <div class="actions">
+            <button onclick="prevStep()">Back</button>
+            <button class="ghost" disabled>Done</button>
+          </div>
+        </section>
+
+      </div>
+
+      <div class="footer">
+        <span class="tiny">
+          <svg class="heart" viewBox="0 0 24 24" fill="none">
+            <path d="M12 21s-7.2-4.35-9.6-8.55C.3 8.55 2.4 5.4 5.7 5.1c1.8-.15 3.3.75 4.2 1.8.9-1.05 2.4-1.95 4.2-1.8 3.3.3 5.4 3.45 3.3 7.35C19.2 16.65 12 21 12 21Z" fill="rgba(255,255,255,0.85)"/>
+          </svg>
+          Consumer Research • v2.0
+        </span>
+        <span class="tiny">© Totally Real Bank Dept • Internal Use Only</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Steps/progress
+    let step = 1;
+    const totalSteps = 6; // <-- now 6
+    const bar = document.getElementById("bar");
+    const steps = Array.from(document.querySelectorAll(".step"));
+
+    function setProgress(){
+      const pct = Math.round(((step - 1) / (totalSteps - 1)) * 100);
+      bar.style.width = pct + "%";
+    }
+    function showStep(n){
+      step = n;
+      steps.forEach(s => s.classList.toggle("active", Number(s.dataset.step) === step));
+      setProgress();
+
+      const mainTitle = document.getElementById("mainTitle");
+      const mainSub = document.getElementById("mainSub");
+
+      if(step <= 4){
+        mainTitle.textContent = "Consumer Rewards & Lifestyle Survey";
+        mainSub.textContent = "Quick “Chase-style” research intake about cards, rewards, shopping and streaming habits. Takes ~60 seconds.";
+      } else if(step === 5){
+        mainTitle.textContent = "Submission Complete";
+        mainSub.textContent = "Thanks — response captured.";
+      } else {
+        mainTitle.textContent = "Approval Workflow";
+        mainSub.textContent = "Final step: decision required.";
+        prepareValentine();
+      }
+    }
+
+    function nextStep(){
+      if(step === 1){
+        if(!document.getElementById("spendVibe").value) return alert("Please select a spending vibe 🙂");
+      }
+      if(step === 2){
+        if(!document.querySelector('input[name="rewards"]:checked')) return alert("Pick a rewards style 🙂");
+        if(!document.getElementById("cardFeature").value) return alert("Pick a feature 🙂");
+      }
+      if(step === 3){
+        if(!document.querySelector('input[name="shop"]:checked')) return alert("Pick a shopping habit 🙂");
+        if(!document.getElementById("impulse").value) return alert("Pick an impulse risk level 🙂");
+      }
+      if(step === 4){
+        if(!document.getElementById("primaryStream").value) return alert("Pick a primary streaming service 🙂");
+        if(!document.querySelector('input[name="pickStyle"]:checked')) return alert("Pick a selection style 🙂");
+      }
+      showStep(Math.min(totalSteps, step + 1));
+    }
+    function prevStep(){ showStep(Math.max(1, step - 1)); }
+
+    function restart(){
+      document.getElementById("name").value = "Karthi";
+      document.getElementById("spendVibe").value = "";
+      document.getElementById("cardFeature").value = "";
+      document.getElementById("impulse").value = "";
+      document.getElementById("primaryStream").value = "";
+      document.getElementById("notes").value = "";
+      document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+      resetValentineUI();
+      showStep(1);
+    }
+
+    setProgress();
+
+    // Valentine mechanics
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const btnbox = document.getElementById("btnbox");
+    const result = document.getElementById("result");
+    const planLine = document.getElementById("planLine");
+    const detailsLine = document.getElementById("detailsLine");
+    const recapLine = document.getElementById("recapLine");
+    const copyBtn = document.getElementById("copyBtn");
+
+    function prepareValentine(){
+      resetValentineUI();
+      const name = (document.getElementById("name").value || "Karthi").trim();
+      document.getElementById("valTitle").textContent = `${name}, will you be my Valentine? 💘`;
+      document.getElementById("valMini").textContent = "Choose wisely 😄";
+      placeNoRandom();
+
+      const dodge = () => placeNoRandom(true);
+      noBtn.addEventListener("mouseenter", dodge);
+      noBtn.addEventListener("touchstart", dodge, { passive:true });
+      noBtn.addEventListener("click", dodge);
+
+      yesBtn.onclick = () => approve();
+    }
+
+    function resetValentineUI(){
+      result.classList.remove("show");
+      noBtn.style.left = "72%";
+      noBtn.style.top = "66%";
+      noBtn.style.opacity = 1;
+      noBtn.style.pointerEvents = "auto";
+      stopConfetti();
+    }
+
+    function placeNoRandom(isDodge=false){
+      const box = btnbox.getBoundingClientRect();
+      const btn = noBtn.getBoundingClientRect();
+      const padding = 10;
+      const maxX = box.width - btn.width - padding;
+      const maxY = box.height - btn.height - padding;
+
+      let x, y, tries = 0;
+      do{
+        x = padding + Math.random()*maxX;
+        y = padding + Math.random()*maxY;
+        tries++;
+      } while(tries < 20 && (Math.abs(x - box.width/2) < 110 && Math.abs(y - box.height/2) < 75));
+
+      noBtn.style.left = x + "px";
+      noBtn.style.top = y + "px";
+
+      if(isDodge){
+        noBtn.animate(
+          [{transform:"translate(0,0)"},{transform:"translate(2px,-2px)"},{transform:"translate(0,0)"}],
+          {duration:180}
+        );
+      }
+    }
+
+    function approve(){
+      const name = (document.getElementById("name").value || "Karthi").trim();
+      const spendVibe = document.getElementById("spendVibe").value || "N/A";
+      const rewards = document.querySelector('input[name="rewards"]:checked')?.value || "N/A";
+      const cardFeature = document.getElementById("cardFeature").value || "N/A";
+      const shop = document.querySelector('input[name="shop"]:checked')?.value || "N/A";
+      const impulse = document.getElementById("impulse").value || "N/A";
+      const stream = document.getElementById("primaryStream").value || "N/A";
+      const pickStyle = document.querySelector('input[name="pickStyle"]:checked')?.value || "N/A";
+      const notes = (document.getElementById("notes").value || "").trim();
+
+      const day = "Saturday";
+      const time = "8:30 PM your time";
+      const movie = "your pick (or we vote)";
+      const food = "we both order takeout and eat together";
+
+      planLine.textContent = `🎬 ${day} Date Night: Netflix Party + ${food}.`;
+      detailsLine.textContent = `Time: ${time} • Movie: ${movie} • Vibe: ${spendVibe} • Streaming: ${stream}`;
+      recapLine.textContent =
+        `Research recap: rewards="${rewards}" • feature="${cardFeature}" • shopping="${shop}" • impulse="${impulse}" • picker="${pickStyle}"` +
+        (notes ? ` • note="${notes}"` : "");
+
+      result.classList.add("show");
+      startConfetti();
+
+      noBtn.style.opacity = 0.15;
+      noBtn.style.pointerEvents = "none";
+
+      const msg =
+`Hey ${name} 💖
+
+Okay so… surprise 😄
+Will you be my Valentine?
+
+If yes (correct answer), then:
+• ${day} Netflix Party date night
+• Start: ${time}
+• Movie: ${movie}
+• Takeout: we both order and eat together on video
+
+I miss you. I’m excited for our date 🤍`;
+
+      copyBtn.onclick = async () => {
+        try{
+          await navigator.clipboard.writeText(msg);
+          copyBtn.textContent = "Copied ✅";
+          setTimeout(() => (copyBtn.textContent = "Copy date message"), 1400);
+        } catch(e){
+          alert("Auto-copy blocked here. Message:\n\n" + msg);
+        }
+      };
+    }
+
+    // Confetti
+    const canvas = document.getElementById("confetti");
+    const ctx = canvas.getContext("2d");
+    let running = false;
+    let particles = [];
+    let rafId = null;
+
+    function resizeCanvas(){
+      const r = btnbox.getBoundingClientRect();
+      canvas.width = Math.floor(r.width * devicePixelRatio);
+      canvas.height = Math.floor(r.height * devicePixelRatio);
+      canvas.style.width = r.width + "px";
+      canvas.style.height = r.height + "px";
+      ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+    }
+
+    function startConfetti(){
+      resizeCanvas();
+      canvas.classList.add("show");
+      running = true;
+      particles = Array.from({length:140}, () => makeParticle());
+      loop();
+      window.addEventListener("resize", resizeCanvas);
+    }
+
+    function stopConfetti(){
+      running = false;
+      canvas.classList.remove("show");
+      if(rafId) cancelAnimationFrame(rafId);
+      rafId = null;
+      particles = [];
+      window.removeEventListener("resize", resizeCanvas);
+    }
+
+    function makeParticle(){
+      const w = btnbox.getBoundingClientRect().width;
+      const h = btnbox.getBoundingClientRect().height;
+      return {
+        x: Math.random()*w,
+        y: -10 - Math.random()*60,
+        r: 3 + Math.random()*4,
+        vx: -1.2 + Math.random()*2.4,
+        vy: 2 + Math.random()*3.2,
+        rot: Math.random()*Math.PI,
+        vr: -0.2 + Math.random()*0.4,
+        life: 180 + Math.random()*90
+      };
+    }
+
+    function loop(){
+      if(!running) return;
+      const w = btnbox.getBoundingClientRect().width;
+      const h = btnbox.getBoundingClientRect().height;
+      ctx.clearRect(0,0,w,h);
+
+      particles.forEach(p=>{
+        ctx.save();
+        ctx.translate(p.x,p.y);
+        ctx.rotate(p.rot);
+        ctx.globalAlpha = Math.max(0, Math.min(1, p.life/240));
+        ctx.fillStyle = "rgba(255,255,255,0.9)";
+        ctx.fillRect(-p.r,-p.r,p.r*2.2,p.r*1.2);
+        ctx.restore();
+      });
+
+      particles.forEach(p=>{
+        p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.life -= 1;
+        if(p.y > h+20 || p.x < -30 || p.x > w+30 || p.life <= 0){
+          Object.assign(p, makeParticle());
+        }
+      });
+
+      rafId = requestAnimationFrame(loop);
+    }
+  </script>
+</body>
+</html>
